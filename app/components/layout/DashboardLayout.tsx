@@ -3,7 +3,8 @@
 import React from "react";
 import { useAuth } from "../../context/AuthContext";
 import { LoadingSpinner } from "../ui/Utils";
-import { Sidebar, Header } from "./Navigation";
+import { Sidebar } from "./Sidebar";
+import { Header } from "./Header";
 
 interface DashboardLayoutProps {
 	children: React.ReactNode;

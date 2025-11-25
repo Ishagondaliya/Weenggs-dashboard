@@ -2,36 +2,37 @@
 
 import React from "react";
 import { useAuthGuard } from "../../hooks";
+import { useAuth } from "../../context/AuthContext";
 
 interface ProtectedRouteProps {
 	children: React.ReactNode;
+}
+
+function LoadingSpinner() {
+	return (
+		<div className="flex items-center justify-center min-h-screen bg-gray-50">
+			<div className="text-center">
+				<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+				<p className="mt-4 text-gray-600">Loading...</p>
+			</div>
+		</div>
+	);
 }
 
 export default function ProtectedRoute({
 	children,
 }: Readonly<ProtectedRouteProps>) {
 	const { shouldRender, isLoading } = useAuthGuard();
+	const { isLoggingOut } = useAuth();
 
-	if (isLoading) {
-		// You can customize this loading component
-		return (
-			<div className="flex items-center justify-center min-h-screen">
-				<div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
-			</div>
-		);
+	// Show loading during initial load, logout, or auth state changes
+	if (isLoading || isLoggingOut) {
+		return <LoadingSpinner />;
 	}
 
+	// If should not render (unauthenticated), show loading while redirect happens
 	if (!shouldRender) {
-		// This should rarely be shown as useAuthGuard handles redirects
-		return (
-			<div className="flex items-center justify-center min-h-screen">
-				<div className="text-center">
-					<h2 className="text-xl font-semibold text-gray-800">
-						Please log in to access the dashboard.
-					</h2>
-				</div>
-			</div>
-		);
+		return <LoadingSpinner />;
 	}
 
 	return <>{children}</>;

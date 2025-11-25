@@ -16,6 +16,7 @@ interface AuthContextType {
 	login: (username: string, password: string) => Promise<boolean>;
 	logout: () => void;
 	isLoading: boolean;
+	isLoggingOut: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,6 +24,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
 	const [user, setUser] = useState<AuthUser | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
+	const [isLoggingOut, setIsLoggingOut] = useState(false);
 	const router = useRouter();
 
 	useEffect(() => {
@@ -30,10 +32,18 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
 		const storedUser = localStorage.getItem("authUser");
 		if (storedUser) {
 			try {
-				setUser(JSON.parse(storedUser));
+				const userData = JSON.parse(storedUser);
+				setUser(userData);
+				// Ensure auth cookie is set
+				document.cookie = `authToken=${storedUser}; Path=/; Max-Age=${
+					60 * 60 * 24 * 7
+				}; SameSite=Strict`;
 			} catch (error) {
 				console.error("Error parsing stored user:", error);
 				localStorage.removeItem("authUser");
+				// Remove invalid auth cookie
+				document.cookie =
+					"authToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
 			}
 		}
 		setIsLoading(false);
@@ -56,6 +66,13 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
 
 			setUser(authUser);
 			localStorage.setItem("authUser", JSON.stringify(authUser));
+			// Set auth cookie for middleware
+			document.cookie = `authToken=${JSON.stringify(
+				authUser
+			)}; Path=/; Max-Age=${60 * 60 * 24 * 7}; SameSite=Strict`;
+
+			// Use router.replace for smoother navigation
+			router.replace("/dashboard");
 			return true;
 		}
 
@@ -63,9 +80,16 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
 	};
 
 	const logout = () => {
+		setIsLoggingOut(true);
 		setUser(null);
 		localStorage.removeItem("authUser");
-		router.push("/login");
+		// Remove auth cookie for middleware
+		document.cookie =
+			"authToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+		// Use router.push with replace for smoother navigation
+		router.replace("/login");
+		// Reset logging out state after navigation
+		setTimeout(() => setIsLoggingOut(false), 100);
 	};
 
 	const contextValue = React.useMemo(
@@ -74,8 +98,9 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
 			login,
 			logout,
 			isLoading,
+			isLoggingOut,
 		}),
-		[user, login, logout, isLoading]
+		[user, login, logout, isLoading, isLoggingOut]
 	);
 
 	return (

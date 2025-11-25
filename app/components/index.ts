@@ -10,7 +10,8 @@ export { LoadingSpinner, ConfirmDialog } from './ui/Utils';
 
 // Layout Components
 export { DashboardLayout } from './layout/DashboardLayout';
-export { Sidebar, Header } from './layout/Navigation';
+export { Sidebar } from './layout/Sidebar';
+export { Header } from './layout/Header';
 
 // Auth Components
 export { default as ProtectedRoute } from './auth/ProtectedRoute';

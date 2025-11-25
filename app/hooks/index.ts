@@ -2,42 +2,37 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 
-// Custom hook for route protection
-export function useAuthGuard() {
-	const { user, isLoading } = useAuth();
-	const router = useRouter();
-	const pathname = usePathname();
-	
-	// Define public routes that don't require authentication
-	const publicRoutes = useMemo(() => ["/", "/login"], []);
-	
-	useEffect(() => {
-		// Skip redirect if still loading authentication state
-		if (isLoading) return;
+	// Custom hook for route protection (now works with middleware)
+	export function useAuthGuard() {
+		const { user, isLoading, isLoggingOut } = useAuth();
+		const router = useRouter();
+		const pathname = usePathname();
 		
-		const isPublicRoute = publicRoutes.includes(pathname);
+		const publicRoutes = useMemo(() => new Set(["/login"]), []);
 		
-		// If user is not authenticated and trying to access a protected route
-		if (!user && !isPublicRoute) {
-			router.push("/login");
-		}
+		useEffect(() => {
+			if (isLoading || isLoggingOut) return;
+			
+			// Middleware handles most redirects, this is for client-side navigation
+			const isPublicRoute = publicRoutes.has(pathname);
+			
+			// Only redirect if middleware didn't catch it (rare edge cases)
+			if (!user && !isPublicRoute && pathname !== "/") {
+				// Use replace to avoid back button issues
+				router.replace("/login");
+			}
+			
+			if (user && pathname === "/login") {
+				router.replace("/dashboard");
+			}
+		}, [user, isLoading, isLoggingOut, pathname, router, publicRoutes]);
 		
-		// If user is authenticated and on login page, redirect to dashboard
-		if (user && pathname === "/login") {
-			router.push("/dashboard");
-		}
-	}, [user, isLoading, pathname, router, publicRoutes]);
-	
-	// Return whether the route should be rendered
-	return {
-		isAuthenticated: !!user,
-		isLoading,
-		shouldRender: isLoading || !!user || publicRoutes.includes(pathname),
-	};
-}
-
-// Custom hook for modal state management
-export function useModal(initialState = false) {
+		return {
+			isAuthenticated: !!user,
+			isLoading: isLoading || isLoggingOut,
+			shouldRender: (isLoading || isLoggingOut) || !!user || publicRoutes.has(pathname),
+		};
+	}export function useModal(initialState = false) {
 	const [isOpen, setIsOpen] = useState(initialState);
 
 	const open = useCallback(() => setIsOpen(true), []);
@@ -52,7 +47,6 @@ export function useModal(initialState = false) {
 	}), [isOpen, open, close, toggle]);
 }
 
-// Custom hook for confirmation dialog state
 interface ConfirmationState<T = unknown> {
 	isOpen: boolean;
 	data: T | null;
@@ -88,7 +82,6 @@ export function useConfirmation<T = unknown>() {
 	}), [state.isOpen, state.data, confirm, cancel, proceed]);
 }
 
-// Custom hook for inline editing state
 export function useInlineEdit<T = unknown>(onSave?: (id: number, data: T) => void) {
 	const [editingId, setEditingId] = useState<number | null>(null);
 	const [editData, setEditData] = useState<T | null>(null);

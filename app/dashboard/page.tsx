@@ -9,9 +9,6 @@ import ProtectedRoute from "../components/auth/ProtectedRoute";
 
 export default function DashboardPage() {
 	const { stats, isLoading } = useData();
-
-	// Users are automatically fetched in DataContext, no need to fetch again
-
 	if (isLoading) {
 		return (
 			<ProtectedRoute>
