@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Admin Dashboard with User and Project Management
 
-## Getting Started
+A modern, interactive admin dashboard built with Next.js, TypeScript, and Tailwind CSS. Features include user management, project management, authentication system, and responsive design with Material-UI components integration.
 
-First, run the development server:
+## Reference
 
+- **Official Documentation**: [Next.js Documentation](https://nextjs.org/docs)
+- **CSS Framework**: [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components**: [Material-UI](https://mui.com/)
+- **TypeScript**: [TypeScript Handbook](https://www.typescriptlang.org/docs/)
+- **React Context**: [React Context API](https://react.dev/reference/react/useContext)
+
+
+## Features
+- **User Management**: Complete CRUD operations for user data with inline editing
+- **Project Management**: Create, edit, delete, and organize projects with status tracking
+- **Authentication System**: Secure login/logout with protected routes
+- **Dashboard Analytics**: Real-time statistics and overview cards
+
+## Advance Feature Tasks
+- **Protected Routes**: Automatic redirection based on authentication status
+- **Inline Editing**: Edit user and project data directly in tables
+- **Search & Filter**: Real-time search across users and projects
+- **Data Persistence**: Mock data storage with localStorage integration
+
+### Technical Features
+**TypeScript**: Full type safety throughout the application
+**Context API**: Centralized state management for auth and data
+**Custom Hooks**: useAuthGuard, useModal, useConfirmation hooks
+**Modern UI**: Clean design with Tailwind CSS and Material-UI
+
+### Common Technical Features
+**Framework**: Next.js 14 (App Router)
+**Language**: TypeScript
+**Styling**: Tailwind CSS with Material-UI components
+**State Management**: React Context API
+**Storage**: localStorage for authentication and data persistence
+
+### Custom Hooks
+- **useModal**: State management for modal dialogs
+- **useConfirmation**: Confirmation dialog state handling
+- **useInlineEdit**: Inline editing functionality
+
+**Install dependencies**
+```bash
+npm install
+```
+**Run the development server**
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
+**Open browser**
+Navigate to http://localhost:3000 to see the result.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Usage
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Authentication
+1. Navigate to the login page at /login
+2. Use demo credentials: admin / password123
+3. Successfully logged-in users are redirected to dashboard
+4. Protected routes automatically redirect to login if not authenticated
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+### Navigation & Layout
+1. **Sidebar Navigation**: Easy access to all sections
+2. **Responsive Design**: Optimized for desktop and mobile devices
+3. **User Profile**: Access logout and user information from header
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Testing with build
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Production Build**
+```bash
+npm run build
+```
